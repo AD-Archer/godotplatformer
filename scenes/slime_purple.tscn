@@ -1,0 +1,89 @@
+[gd_scene load_steps=10 format=3 uid="uid://d2q6j4nbbyqlh"]
+
+[ext_resource type="Texture2D" uid="uid://de6funya30fc0" path="res://assets/sprites/slime_purple.png" id="1_dj6mj"]
+[ext_resource type="PackedScene" uid="uid://copfpfs2mrrk0" path="res://scenes/killzone.tscn" id="2_x4eju"]
+
+[sub_resource type="GDScript" id="GDScript_roegb"]
+resource_name = "slime.gd"
+script/source = "extends Node2D
+
+const SPEED = 60
+
+var direction = 1
+@onready var animated_sprite = $AnimatedSprite2D
+@onready var raycast_right = $\"Raycast right\"
+@onready var raycast_left = $\"RayCast left\"
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	if raycast_right.is_colliding():
+		direction = -1
+		animated_sprite.flip_h = true
+	if raycast_left.is_colliding():
+		direction = 1
+		animated_sprite.flip_h = false
+
+	position.x += direction * SPEED * delta
+"
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tmit1"]
+atlas = ExtResource("1_dj6mj")
+region = Rect2(72, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jxmqx"]
+atlas = ExtResource("1_dj6mj")
+region = Rect2(48, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3yf3g"]
+atlas = ExtResource("1_dj6mj")
+region = Rect2(24, 24, 24, 24)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3unqr"]
+atlas = ExtResource("1_dj6mj")
+region = Rect2(0, 24, 24, 24)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pon7h"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_tmit1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jxmqx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3yf3g")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3unqr")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5hdce"]
+size = Vector2(8, 10)
+
+[node name="SlimePurple" type="Node2D"]
+script = SubResource("GDScript_roegb")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_pon7h")
+animation = &"idle"
+autoplay = "idle"
+frame = 1
+frame_progress = 0.553098
+
+[node name="killzone" parent="." instance=ExtResource("2_x4eju")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="killzone"]
+position = Vector2(0, 3)
+shape = SubResource("RectangleShape2D_5hdce")
+
+[node name="Raycast right" type="RayCast2D" parent="."]
+position = Vector2(0, 4)
+target_position = Vector2(21, 0)
+
+[node name="RayCast left" type="RayCast2D" parent="."]
+position = Vector2(0, 4)
+target_position = Vector2(-21, 0)

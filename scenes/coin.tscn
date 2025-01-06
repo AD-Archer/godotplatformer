@@ -1,12 +1,14 @@
-[gd_scene load_steps=17 format=3 uid="uid://de5mp8rkfr0r3"]
+[gd_scene load_steps=21 format=3 uid="uid://de5mp8rkfr0r3"]
 
 [ext_resource type="Texture2D" uid="uid://djqa377iy405c" path="res://assets/sprites/coin.png" id="1_jskbx"]
+[ext_resource type="AudioStream" uid="uid://cqihthe6kuky7" path="res://assets/sounds/coin.wav" id="2_rcekc"]
 
 [sub_resource type="GDScript" id="GDScript_2apvq"]
 resource_name = "coid.gd"
 script/source = "extends Area2D
 
-
+@onready var game_manager = %GameManager
+@onready var animation_player = $AnimationPlayer
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass
@@ -17,9 +19,107 @@ func _process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	print(\"Plus one coin\")
-	queue_free()
+	game_manager.add_point()
+	animation_player.play(\"pickup_animation\")
 "
+
+[sub_resource type="Animation" id="Animation_oojqn"]
+resource_name = "pickup_animation"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Pickup:playing")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0.0333333),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath(".")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0.966667),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"queue_free"
+}]
+}
+
+[sub_resource type="Animation" id="Animation_dr6d4"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("AnimatedSprite2D:visible")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("CollisionShape2D:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Pickup:playing")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dsty2"]
+_data = {
+"RESET": SubResource("Animation_dr6d4"),
+"pickup_animation": SubResource("Animation_oojqn")
+}
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_eifw0"]
 atlas = ExtResource("1_jskbx")
@@ -120,12 +220,22 @@ radius = 4.47214
 collision_mask = 2
 script = SubResource("GDScript_2apvq")
 
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+libraries = {
+"": SubResource("AnimationLibrary_dsty2")
+}
+
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_2lymh")
 autoplay = "default"
-frame_progress = 0.15575
+frame = 3
+frame_progress = 0.299782
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_8tj42")
+
+[node name="Pickup" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource("2_rcekc")
+bus = &"SFX"
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
